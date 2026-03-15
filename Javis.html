@@ -1,0 +1,69 @@
+<script>
+
+const API_KEY="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"
+
+function speak(text){
+
+let speech=new SpeechSynthesisUtterance(text)
+speech.lang="hi-IN"
+speech.rate=1
+speech.pitch=1
+
+speechSynthesis.speak(speech)
+
+}
+
+async function send(){
+
+let msg=document.getElementById("msg").value
+if(!msg) return
+
+let chat=document.getElementById("chat")
+
+chat.innerHTML+=`<div class="user">${msg}</div>`
+
+document.getElementById("msg").value=""
+
+try{
+
+let res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+
+method:"POST",
+
+headers:{
+"Authorization":"Bearer "+API_KEY,
+"Content-Type":"application/json",
+"HTTP-Referer":"https://as280-cmyk.github.io/",
+"X-Title":"Jarvis AI"
+},
+
+body:JSON.stringify({
+
+model:"deepseek/deepseek-chat",
+
+messages:[
+{role:"system",content:"You are Jarvis AI created by Shivam. Reply in Hinglish."},
+{role:"user",content:msg}
+]
+
+})
+
+})
+
+let data=await res.json()
+
+let reply=data.choices?.[0]?.message?.content || "Jarvis reply nahi de paaya."
+
+chat.innerHTML+=`<div class="ai">${reply}</div>`
+
+speak(reply)
+
+}catch(e){
+
+chat.innerHTML+=`<div class="ai">Error: API connect nahi ho pa raha.</div>`
+
+}
+
+}
+
+  </script>
