@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Jarvis AI</title>
+
+<style>
+
+body{
+background:#0f172a;
+color:white;
+font-family:sans-serif;
+margin:0;
+}
+
+.chat{
+height:85vh;
+overflow:auto;
+padding:15px;
+}
+
+.user{
+text-align:right;
+margin:10px;
+color:#60a5fa;
+}
+
+.ai{
+text-align:left;
+margin:10px;
+color:#34d399;
+}
+
+.bottom{
+position:fixed;
+bottom:0;
+width:100%;
+background:#020617;
+padding:10px;
+}
+
+input{
+width:70%;
+padding:10px;
+border-radius:10px;
+border:none;
+}
+
+button{
+padding:10px;
+border-radius:10px;
+border:none;
+background:#2563eb;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="chat" id="chat"></div>
+
+<div class="bottom">
+
+<input id="msg" placeholder="Ask Jarvis">
+<button onclick="send()">Send</button>
+
+</div>
+
+<script>
+
+const API_KEY="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"
+
+function speak(text){
+
+let speech=new SpeechSynthesisUtterance(text)
+
+speech.lang="hi-IN"
+
+speech.rate=1
+
+speech.pitch=1
+
+speechSynthesis.speak(speech)
+
+}
+
+async function send(){
+
+let msg=document.getElementById("msg").value
+
+let chat=document.getElementById("chat")
+
+chat.innerHTML+=`<div class="user">${msg}</div>`
+
+document.getElementById("msg").value=""
+
+let res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+
+method:"POST",
+
+headers:{
+"Authorization":"Bearer "+API_KEY,
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+model:"deepseek/deepseek-chat",
+
+messages:[
+{role:"system",content:"You are Jarvis AI created by Shivam. Reply in Hinglish."},
+{role:"user",content:msg}
+]
+
+})
+
+})
+
+let data=await res.json()
+
+let reply=data.choices[0].message.content
+
+chat.innerHTML+=`<div class="ai">${reply}</div>`
+
+speak(reply)
+
+}
+
+</script>
+
+</body>
+
+</html>020617
